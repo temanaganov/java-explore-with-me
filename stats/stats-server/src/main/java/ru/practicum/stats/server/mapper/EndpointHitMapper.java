@@ -1,6 +1,5 @@
 package ru.practicum.stats.server.mapper;
 
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.stats.dto.CreateEndpointHitDto;
 import ru.practicum.stats.server.model.EndpointHit;
