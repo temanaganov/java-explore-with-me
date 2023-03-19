@@ -8,5 +8,5 @@ import ru.practicum.stats.dto.ViewStats;
 public class ViewStatsMapper {
     public ViewStats tupleToViewStats(Tuple tuple) {
         return new ViewStats(tuple.get(0, String.class), tuple.get(1, String.class), tuple.get(2, Long.class));
-    };
+    }
 }
