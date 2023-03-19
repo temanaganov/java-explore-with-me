@@ -1,5 +1,6 @@
 package ru.practicum.stats.client;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -15,9 +16,9 @@ import java.util.List;
 public class StatsClient {
     private final WebClient webClient;
 
-    public StatsClient() {
+    public StatsClient(@Value("${ewm-stats-server.url}") String serverUrl) {
         webClient = WebClient.builder()
-                .baseUrl("http://localhost:9090")
+                .baseUrl(serverUrl)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
