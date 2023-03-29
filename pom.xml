@@ -25,6 +25,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<lombok.version>1.18.24</lombok.version>
 		<querydsl.version>5.0.0</querydsl.version>
+		<mapstruct.version>1.5.3.Final</mapstruct.version>
 		<revision>0.0.1-SNAPSHOT</revision>
 	</properties>
 
@@ -53,6 +54,18 @@
 				<groupId>com.querydsl</groupId>
 				<artifactId>querydsl-jpa</artifactId>
 				<version>${querydsl.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mapstruct</groupId>
+				<artifactId>mapstruct</artifactId>
+				<version>${mapstruct.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mapstruct</groupId>
+				<artifactId>mapstruct-processor</artifactId>
+				<version>${mapstruct.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
