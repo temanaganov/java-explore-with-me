@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.practicum.ewm.event.dto.EventDto;
-import ru.practicum.ewm.event.model.Event;
 
 import java.util.List;
 
