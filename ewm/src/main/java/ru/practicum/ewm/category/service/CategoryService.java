@@ -3,6 +3,7 @@ package ru.practicum.ewm.category.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.category.dto.CreateCategoryDto;
 import ru.practicum.ewm.category.dto.UpdateCategoryDto;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
@@ -30,20 +32,23 @@ public class CategoryService {
         return categoryMapper.categoryToCategoryDto(checkCategory(categoryId));
     }
 
+    @Transactional
     public CategoryDto createCategory(CreateCategoryDto createCategoryDto) {
         Category category = categoryMapper.createCategoryDtoToCategory(createCategoryDto);
 
         return categoryMapper.categoryToCategoryDto(categoryRepository.save(category));
     }
 
+    @Transactional
     public CategoryDto updateCategory(long categoryId, UpdateCategoryDto updateCategoryDto) {
         Category category = checkCategory(categoryId);
 
         category.setName(updateCategoryDto.getName());
 
-        return categoryMapper.categoryToCategoryDto(categoryRepository.save(category));
+        return categoryMapper.categoryToCategoryDto(category);
     }
 
+    @Transactional
     public void deleteCategory(long categoryId) {
         checkCategory(categoryId);
         categoryRepository.deleteById(categoryId);

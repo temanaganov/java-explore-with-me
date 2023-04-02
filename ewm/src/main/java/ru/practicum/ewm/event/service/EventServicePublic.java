@@ -1,6 +1,7 @@
 package ru.practicum.ewm.event.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.core.exception.NotFoundException;
@@ -23,6 +24,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class EventServicePublic {
+    @Value("${ewm-app-name}")
+    private final String appName;
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
     private final StatsClient statsClient;
@@ -61,7 +64,7 @@ public class EventServicePublic {
 
     private void sendStatistics(HttpServletRequest request) {
         statsClient.saveEndpointHit(new CreateEndpointHitDto(
-                "ewm",
+                appName,
                 request.getRequestURI(),
                 request.getRemoteAddr(),
                 LocalDateTime.now()

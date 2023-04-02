@@ -92,7 +92,7 @@ public class EventServiceAdmin {
             event.setState(newState);
         }
 
-        return eventMapper.eventToEventDto(eventRepository.save(event));
+        return eventMapper.eventToEventDto(event);
     }
 
     private Event checkEvent(long eventId) {

@@ -3,6 +3,7 @@ package ru.practicum.ewm.compilation.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.compilation.dto.CompilationDto;
 import ru.practicum.ewm.compilation.dto.CreateCompilationDto;
 import ru.practicum.ewm.compilation.dto.UpdateCompilationDto;
@@ -14,10 +15,12 @@ import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.repository.EventRepository;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CompilationService {
     private final CompilationRepository compilationRepository;
     private final EventRepository eventRepository;
@@ -46,24 +49,18 @@ public class CompilationService {
         return compilationMapper.compilationToCompilationDto(compilation);
     }
 
+    @Transactional
     public CompilationDto createCompilation(CreateCompilationDto createCompilationDto) {
         Compilation compilation = compilationMapper.createCompilationDtoToCompilation(createCompilationDto);
 
-        List<Event> events = createCompilationDto
-                .getEvents()
-                .stream()
-                .map(eventId -> eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("event", eventId)))
-                .collect(Collectors.toList());
+        Set<Event> events = eventRepository.findAllByIdIn(createCompilationDto.getEvents());
 
         compilation.setEvents(events);
 
-        compilation = compilationRepository.save(compilation);
-
-        compilation.getId();
-
-        return compilationMapper.compilationToCompilationDto(compilation);
+        return compilationMapper.compilationToCompilationDto(compilationRepository.save(compilation));
     }
 
+    @Transactional
     public CompilationDto updateCompilation(long compilationId, UpdateCompilationDto updateCompilationDto) {
         Compilation compilation = compilationRepository
                 .findById(compilationId)
@@ -77,13 +74,14 @@ public class CompilationService {
             compilation.setPinned(updateCompilationDto.getPinned());
         }
 
-        if (updateCompilationDto.getTitle() != null) {
+        if (updateCompilationDto.getTitle() != null && !updateCompilationDto.getTitle().isBlank()) {
             compilation.setTitle(updateCompilationDto.getTitle());
         }
 
-        return compilationMapper.compilationToCompilationDto(compilationRepository.save(compilation));
+        return compilationMapper.compilationToCompilationDto(compilation);
     }
 
+    @Transactional
     public void deleteCompilation(long compilationId) {
         compilationRepository
                 .findById(compilationId)

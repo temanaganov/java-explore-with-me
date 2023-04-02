@@ -139,7 +139,7 @@ public class EventServicePrivate {
             event.setState(newState);
         }
 
-        return eventMapper.eventToEventDto(eventRepository.save(event));
+        return eventMapper.eventToEventDto(event);
     }
 
     public List<RequestDto> getEventRequests(long userId, long eventId) {
@@ -175,8 +175,6 @@ public class EventServicePrivate {
         if (updateRequestDto.getStatus() == RequestStatus.REJECTED) {
             requests.forEach(request -> request.setStatus(RequestStatus.REJECTED));
 
-            requestRepository.saveAll(requests);
-
             return new EventRequestStatusUpdateResultDto(
                     Collections.emptyList(),
                     requests
@@ -204,9 +202,6 @@ public class EventServicePrivate {
                 response.setRejectedRequests(newRequests);
             }
         });
-
-        requestRepository.saveAll(requests);
-        eventRepository.save(event);
 
         return response;
     }

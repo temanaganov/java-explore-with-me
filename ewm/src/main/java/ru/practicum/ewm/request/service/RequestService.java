@@ -65,7 +65,6 @@ public class RequestService {
         if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
             status = RequestStatus.CONFIRMED;
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
-            eventRepository.save(event);
         }
 
         Request request = Request
@@ -90,7 +89,7 @@ public class RequestService {
 
         request.setStatus(RequestStatus.CANCELED);
 
-        return requestMapper.requestToRequestDto(requestRepository.save(request));
+        return requestMapper.requestToRequestDto(request);
     }
 
     private User checkUser(long userId) {

@@ -15,9 +15,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class RequestDto {
     private Long id;
+
     private Long event;
+
     private Long requester;
+
     private RequestStatus status;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
 }
