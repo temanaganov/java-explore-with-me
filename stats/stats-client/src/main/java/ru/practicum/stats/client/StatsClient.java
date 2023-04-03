@@ -1,7 +1,6 @@
 package ru.practicum.stats.client;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import ru.practicum.stats.dto.CreateEndpointHitDto;
-import ru.practicum.stats.dto.ViewStats;
 
 import java.util.List;
 
