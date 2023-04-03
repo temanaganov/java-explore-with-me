@@ -24,7 +24,6 @@ public interface EventRepositoryCustom {
             Boolean paid,
             LocalDateTime rangeStart,
             LocalDateTime rangeEnd,
-            boolean onlyAvailable,
             EventSort sort,
             int from,
             int size

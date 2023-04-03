@@ -66,11 +66,6 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private EventState state;
 
-    private Integer views;
-
-    @Column(name = "confirmed_requests")
-    private Integer confirmedRequests;
-
     @Column(name = "created_on")
     private LocalDateTime createdOn;
 

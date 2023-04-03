@@ -56,7 +56,9 @@ public class RequestService {
             throw new ConflictException();
         }
 
-        if (event.getParticipantLimit() != 0 && Objects.equals(event.getConfirmedRequests(), event.getParticipantLimit())) {
+        long eventConfirmedRequests = requestRepository.findCountOfEventConfirmedRequests(eventId);
+
+        if (event.getParticipantLimit() != 0 && eventConfirmedRequests == event.getParticipantLimit()) {
             throw new ConflictException();
         }
 
@@ -64,7 +66,6 @@ public class RequestService {
 
         if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
             status = RequestStatus.CONFIRMED;
-            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
         }
 
         Request request = Request

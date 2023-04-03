@@ -26,8 +26,6 @@ CREATE TABLE IF NOT EXISTS event
     request_moderation BOOLEAN       NOT NULL,
     title              VARCHAR(120)  NOT NULL,
     state              VARCHAR(15)   NOT NULL,
-    views              INTEGER       NOT NULL,
-    confirmed_requests INTEGER       NOT NULL,
     created_on         TIMESTAMP     NOT NULL,
     published_on       TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES category (category_id) ON DELETE RESTRICT,

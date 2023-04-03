@@ -41,10 +41,30 @@ public class StatsClient {
                 .block();
     }
 
-    public Mono<List<ViewStats>> getStatistics() {
+    public ResponseEntity<Object> getStatistics(
+            String start,
+            String end,
+            List<String> uris,
+            Boolean unique
+    ) {
+        String paramsUri = uris.stream().reduce("", (result, uri) -> result + "&uris=" + uri);
         return webClient.get()
-                .uri("/stats")
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<ViewStats>>() {});
+                .uri(uriBuilder -> uriBuilder
+                        .path("/stats")
+                        .queryParam("start", start)
+                        .queryParam("end", end)
+                        .query(paramsUri)
+                        .queryParam("unique", unique)
+                        .build())
+                .exchangeToMono(response -> {
+                    if (response.statusCode().is2xxSuccessful()) {
+                        return response.bodyToMono(Object.class)
+                                .map(body -> ResponseEntity.ok().body(body));
+                    } else {
+                        return response.createException()
+                                .flatMap(Mono::error);
+                    }
+                })
+                .block();
     }
 }

@@ -12,6 +12,8 @@ import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.model.EventSort;
 import ru.practicum.ewm.event.model.EventState;
 import ru.practicum.ewm.event.repository.EventRepository;
+import ru.practicum.ewm.event.utils.EventUtils;
+import ru.practicum.ewm.request.repository.RequestRepository;
 import ru.practicum.stats.client.StatsClient;
 import ru.practicum.stats.dto.CreateEndpointHitDto;
 
@@ -27,6 +29,7 @@ public class EventServicePublic {
     @Value("${ewm-app-name}")
     private final String appName;
     private final EventRepository eventRepository;
+    private final RequestRepository requestRepository;
     private final EventMapper eventMapper;
     private final StatsClient statsClient;
 
@@ -43,10 +46,32 @@ public class EventServicePublic {
             HttpServletRequest request
     ) {
         sendStatistics(request);
-        return eventRepository
-                .findAllByPublicFilters(text, categoryIds, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size)
+
+        List<EventDto> events = eventRepository
+                .findAllByPublicFilters(text, categoryIds, paid, rangeStart, rangeEnd, sort, from, size)
                 .stream()
-                .map(eventMapper::eventToEventShortDto)
+                .map(eventMapper::eventToEventDto)
+                .map(event -> {
+                    event.setConfirmedRequests(requestRepository.findCountOfEventConfirmedRequests(event.getId()));
+                    return event;
+                })
+                .collect(Collectors.toList());
+
+        if (onlyAvailable) {
+            events = events.stream()
+                    .filter(event -> event.getParticipantLimit() <= event.getConfirmedRequests())
+                    .collect(Collectors.toList());
+        }
+
+        if (sort == EventSort.VIEWS) {
+            events.sort((event1, event2) -> Long.compare(event2.getViews(), event1.getViews()));
+        }
+
+        EventUtils.addViewsToEvents(events, statsClient);
+
+        return events
+                .stream()
+                .map(eventMapper::eventDtoToEventShortDto)
                 .collect(Collectors.toList());
     }
 
@@ -59,7 +84,12 @@ public class EventServicePublic {
             throw new NotFoundException("event", eventId);
         }
 
-        return eventMapper.eventToEventDto(event);
+        EventDto eventDto = eventMapper.eventToEventDto(event);
+
+        EventUtils.addViewsToEvents(List.of(eventDto), statsClient);
+        eventDto.setConfirmedRequests(requestRepository.findCountOfEventConfirmedRequests(event.getId()));
+
+        return eventDto;
     }
 
     private void sendStatistics(HttpServletRequest request) {

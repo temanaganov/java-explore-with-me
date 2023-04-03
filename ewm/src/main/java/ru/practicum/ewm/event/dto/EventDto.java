@@ -22,7 +22,7 @@ public class EventDto {
 
     private CategoryDto category;
 
-    private Integer confirmedRequests;
+    private long confirmedRequests;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdOn;
@@ -49,5 +49,5 @@ public class EventDto {
 
     private String title;
 
-    private Integer views;
+    private long views;
 }

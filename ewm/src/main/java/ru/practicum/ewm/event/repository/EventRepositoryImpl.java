@@ -66,7 +66,6 @@ public class EventRepositoryImpl implements EventRepositoryCustom {
             Boolean paid,
             LocalDateTime rangeStart,
             LocalDateTime rangeEnd,
-            boolean onlyAvailable,
             EventSort sort,
             int from,
             int size
@@ -98,18 +97,10 @@ public class EventRepositoryImpl implements EventRepositoryCustom {
             where = where.and(event.paid.eq(paid));
         }
 
-        if (onlyAvailable) {
-            where = where.and(event.confirmedRequests.lt(event.participantLimit));
-        }
-
         OrderSpecifier orderBy = event.id.asc();
 
         if (sort == EventSort.EVENT_DATE) {
             orderBy = event.eventDate.desc();
-        }
-
-        if (sort == EventSort.VIEWS) {
-            orderBy = event.views.desc();
         }
 
         return new JPAQuery<Event>(entityManager)

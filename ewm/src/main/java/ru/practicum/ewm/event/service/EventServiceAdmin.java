@@ -14,6 +14,9 @@ import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.model.EventState;
 import ru.practicum.ewm.event.model.EventStateAdminAction;
 import ru.practicum.ewm.event.repository.EventRepository;
+import ru.practicum.ewm.event.utils.EventUtils;
+import ru.practicum.ewm.request.repository.RequestRepository;
+import ru.practicum.stats.client.StatsClient;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,8 +27,10 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class EventServiceAdmin {
     private final EventRepository eventRepository;
+    private final RequestRepository requestRepository;
     private final CategoryRepository categoryRepository;
     private final EventMapper eventMapper;
+    private final StatsClient statsClient;
 
     public List<EventDto> getAllEvents(
             List<Long> userIds,
@@ -36,11 +41,18 @@ public class EventServiceAdmin {
             int from,
             int size
     ) {
-        return eventRepository
+        List<EventDto> eventDtos = eventRepository
                 .findAllByAdminFilters(userIds, states, categoryIds, rangeStart, rangeEnd, from, size)
                 .stream()
                 .map(eventMapper::eventToEventDto)
+                .map(event -> {
+                    event.setConfirmedRequests(requestRepository.findCountOfEventConfirmedRequests(event.getId()));
+                    return event;
+                })
                 .collect(Collectors.toList());
+        EventUtils.addViewsToEvents(eventDtos, statsClient);
+
+        return eventDtos;
     }
 
     @Transactional
@@ -92,7 +104,12 @@ public class EventServiceAdmin {
             event.setState(newState);
         }
 
-        return eventMapper.eventToEventDto(event);
+        EventDto eventDto = eventMapper.eventToEventDto(event);
+
+        EventUtils.addViewsToEvents(List.of(eventDto), statsClient);
+        eventDto.setConfirmedRequests(requestRepository.findCountOfEventConfirmedRequests(eventId));
+
+        return eventDto;
     }
 
     private Event checkEvent(long eventId) {

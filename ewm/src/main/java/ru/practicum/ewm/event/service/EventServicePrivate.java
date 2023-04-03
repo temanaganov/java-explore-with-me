@@ -19,6 +19,7 @@ import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.model.EventState;
 import ru.practicum.ewm.event.model.EventStateUserAction;
 import ru.practicum.ewm.event.repository.EventRepository;
+import ru.practicum.ewm.event.utils.EventUtils;
 import ru.practicum.ewm.request.dto.RequestDto;
 import ru.practicum.ewm.request.mapper.RequestMapper;
 import ru.practicum.ewm.request.model.Request;
@@ -26,6 +27,7 @@ import ru.practicum.ewm.request.model.RequestStatus;
 import ru.practicum.ewm.request.repository.RequestRepository;
 import ru.practicum.ewm.user.model.User;
 import ru.practicum.ewm.user.repository.UserRepository;
+import ru.practicum.stats.client.StatsClient;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -44,12 +46,24 @@ public class EventServicePrivate {
     private final RequestRepository requestRepository;
     private final EventMapper eventMapper;
     private final RequestMapper requestMapper;
+    private final StatsClient statsClient;
 
     public List<EventShortDto> getAllEvents(long userId, Pageable pageable) {
-        return eventRepository
+        List<EventDto> eventDtos = eventRepository
                 .findAllByInitiatorId(userId, pageable)
                 .stream()
-                .map(eventMapper::eventToEventShortDto)
+                .map(eventMapper::eventToEventDto)
+                .map(event -> {
+                    event.setConfirmedRequests(requestRepository.findCountOfEventConfirmedRequests(event.getId()));
+                    return event;
+                })
+                .collect(Collectors.toList());
+
+        EventUtils.addViewsToEvents(eventDtos, statsClient);
+
+        return eventDtos
+                .stream()
+                .map(eventMapper::eventDtoToEventShortDto)
                 .collect(Collectors.toList());
     }
 
@@ -61,7 +75,12 @@ public class EventServicePrivate {
             throw new NotFoundException("event", eventId);
         }
 
-        return eventMapper.eventToEventDto(event);
+        EventDto eventDto = eventMapper.eventToEventDto(event);
+
+        EventUtils.addViewsToEvents(List.of(eventDto), statsClient);
+        eventDto.setConfirmedRequests(requestRepository.findCountOfEventConfirmedRequests(event.getId()));
+
+        return eventDto;
     }
 
     @Transactional
@@ -74,8 +93,6 @@ public class EventServicePrivate {
         event.setInitiator(user);
         event.setCategory(category);
         event.setState(EventState.PENDING);
-        event.setViews(0);
-        event.setConfirmedRequests(0);
         event.setCreatedOn(LocalDateTime.now());
 
         return eventMapper.eventToEventDto(eventRepository.save(event));
@@ -139,7 +156,12 @@ public class EventServicePrivate {
             event.setState(newState);
         }
 
-        return eventMapper.eventToEventDto(event);
+        EventDto eventDto = eventMapper.eventToEventDto(event);
+
+        EventUtils.addViewsToEvents(List.of(eventDto), statsClient);
+        eventDto.setConfirmedRequests(requestRepository.findCountOfEventConfirmedRequests(event.getId()));
+
+        return eventDto;
     }
 
     public List<RequestDto> getEventRequests(long userId, long eventId) {
@@ -161,8 +183,9 @@ public class EventServicePrivate {
     ) {
         checkUser(userId);
         Event event = checkEvent(eventId);
+        long eventConfirmedRequests = requestRepository.findCountOfEventConfirmedRequests(eventId);
 
-        if (event.getParticipantLimit() != 0 && Objects.equals(event.getConfirmedRequests(), event.getParticipantLimit())) {
+        if (event.getParticipantLimit() != 0 && eventConfirmedRequests == event.getParticipantLimit()) {
             throw new ConflictException();
         }
 
@@ -187,10 +210,8 @@ public class EventServicePrivate {
         EventRequestStatusUpdateResultDto response = new EventRequestStatusUpdateResultDto(Collections.emptyList(), Collections.emptyList());
 
         requests.forEach(request -> {
-            if (event.getConfirmedRequests() < event.getParticipantLimit()) {
+            if (eventConfirmedRequests < event.getParticipantLimit()) {
                 request.setStatus(RequestStatus.CONFIRMED);
-                event.setConfirmedRequests(event.getConfirmedRequests() + 1);
-
                 List<RequestDto> newRequests = new ArrayList<>(response.getConfirmedRequests());
                 newRequests.add(requestMapper.requestToRequestDto(request));
                 response.setConfirmedRequests(newRequests);
