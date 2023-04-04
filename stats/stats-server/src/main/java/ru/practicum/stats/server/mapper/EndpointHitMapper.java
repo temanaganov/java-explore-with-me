@@ -1,28 +1,13 @@
 package ru.practicum.stats.server.mapper;
 
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 import ru.practicum.stats.dto.CreateEndpointHitDto;
 import ru.practicum.stats.dto.EndpointHitDto;
 import ru.practicum.stats.server.model.EndpointHit;
 
-@Component
-public class EndpointHitMapper {
-    public EndpointHit createEndpointHitDtoToEndpointHit(CreateEndpointHitDto createEndpointHitDto) {
-        return EndpointHit.builder()
-                .app(createEndpointHitDto.getApp())
-                .uri(createEndpointHitDto.getUri())
-                .ip(createEndpointHitDto.getIp())
-                .timestamp(createEndpointHitDto.getTimestamp())
-                .build();
-    }
+@Mapper(componentModel = "spring")
+public interface EndpointHitMapper {
+    EndpointHit createEndpointHitDtoToEndpointHit(CreateEndpointHitDto createEndpointHitDto);
 
-    public EndpointHitDto endpointHitToEndpointHitDto(EndpointHit endpointHit) {
-        return EndpointHitDto.builder()
-                .id(endpointHit.getId())
-                .app(endpointHit.getApp())
-                .uri(endpointHit.getUri())
-                .ip(endpointHit.getIp())
-                .timestamp(endpointHit.getTimestamp())
-                .build();
-    }
+    EndpointHitDto endpointHitToEndpointHitDto(EndpointHit endpointHit);
 }

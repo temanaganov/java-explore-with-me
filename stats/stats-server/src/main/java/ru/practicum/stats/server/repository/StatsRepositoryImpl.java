@@ -24,16 +24,16 @@ public class StatsRepositoryImpl implements StatsRepositoryCustom {
     @Override
     public List<ViewStats> getStatisticsByUris(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
         QEndpointHit hit = QEndpointHit.endpointHit;
-        BooleanExpression whereExpr = hit.timestamp.between(start, end);
+        BooleanExpression where = hit.timestamp.between(start, end);
 
         if (uris != null && !uris.isEmpty()) {
-            whereExpr = whereExpr.and(hit.uri.in(uris));
+            where = where.and(hit.uri.in(uris));
         }
 
         return new JPAQuery<Tuple>(entityManager)
                 .select(hit.app, hit.uri, unique ? hit.ip.countDistinct() : Expressions.ONE.count())
                 .from(hit)
-                .where(whereExpr)
+                .where(where)
                 .groupBy(hit.app, hit.uri)
                 .orderBy(Expressions.THREE.desc())
                 .stream()

@@ -1,12 +1,14 @@
 package ru.practicum.stats.server.mapper;
 
 import com.querydsl.core.Tuple;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import ru.practicum.stats.dto.ViewStats;
 
-@Component
-public class ViewStatsMapper {
-    public ViewStats tupleToViewStats(Tuple tuple) {
-        return new ViewStats(tuple.get(0, String.class), tuple.get(1, String.class), tuple.get(2, Long.class));
-    }
+@Mapper(componentModel = "spring")
+public interface ViewStatsMapper {
+    @Mapping(target = "app", expression = "java(tuple.get(0, String.class))")
+    @Mapping(target = "uri", expression = "java(tuple.get(1, String.class))")
+    @Mapping(target = "hits", expression = "java(tuple.get(2, Long.class))")
+    ViewStats tupleToViewStats(Tuple tuple);
 }
