@@ -6,10 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.practicum.ewm.category.dto.CategoryDto;
+import ru.practicum.ewm.comment.dto.CommentShortDto;
 import ru.practicum.ewm.event.model.EventState;
 import ru.practicum.ewm.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -50,4 +52,6 @@ public class EventDto {
     private String title;
 
     private long views;
+
+    private List<CommentShortDto> comments;
 }

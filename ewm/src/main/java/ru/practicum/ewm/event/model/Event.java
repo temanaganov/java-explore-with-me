@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.practicum.ewm.category.model.Category;
+import ru.practicum.ewm.comment.model.Comment;
 import ru.practicum.ewm.user.model.User;
 
 import javax.persistence.Column;
@@ -18,8 +19,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -71,4 +74,8 @@ public class Event {
 
     @Column(name = "published_on")
     private LocalDateTime publishedOn;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id")
+    private List<Comment> comments;
 }
