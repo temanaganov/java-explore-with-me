@@ -45,12 +45,9 @@ public class EventServiceAdmin {
                 .findAllByAdminFilters(userIds, states, categoryIds, rangeStart, rangeEnd, from, size)
                 .stream()
                 .map(eventMapper::eventToEventDto)
-                .map(event -> {
-                    event.setConfirmedRequests(requestRepository.findCountOfEventConfirmedRequests(event.getId()));
-                    return event;
-                })
                 .collect(Collectors.toList());
-        EventUtils.addViewsToEvents(eventDtos, statsClient);
+
+        EventUtils.addViewsAndConfirmedRequestsToEvents(eventDtos, statsClient, requestRepository);
 
         return eventDtos;
     }
@@ -106,8 +103,7 @@ public class EventServiceAdmin {
 
         EventDto eventDto = eventMapper.eventToEventDto(event);
 
-        EventUtils.addViewsToEvents(List.of(eventDto), statsClient);
-        eventDto.setConfirmedRequests(requestRepository.findCountOfEventConfirmedRequests(eventId));
+        EventUtils.addViewsAndConfirmedRequestsToEvents(List.of(eventDto), statsClient, requestRepository);
 
         return eventDto;
     }

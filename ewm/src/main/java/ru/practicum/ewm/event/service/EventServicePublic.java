@@ -51,10 +51,6 @@ public class EventServicePublic {
                 .findAllByPublicFilters(text, categoryIds, paid, rangeStart, rangeEnd, sort, from, size)
                 .stream()
                 .map(eventMapper::eventToEventDto)
-                .map(event -> {
-                    event.setConfirmedRequests(requestRepository.findCountOfEventConfirmedRequests(event.getId()));
-                    return event;
-                })
                 .collect(Collectors.toList());
 
         if (onlyAvailable) {
@@ -67,7 +63,7 @@ public class EventServicePublic {
             events.sort((event1, event2) -> Long.compare(event2.getViews(), event1.getViews()));
         }
 
-        EventUtils.addViewsToEvents(events, statsClient);
+        EventUtils.addViewsAndConfirmedRequestsToEvents(events, statsClient, requestRepository);
 
         return events
                 .stream()
@@ -86,8 +82,7 @@ public class EventServicePublic {
 
         EventDto eventDto = eventMapper.eventToEventDto(event);
 
-        EventUtils.addViewsToEvents(List.of(eventDto), statsClient);
-        eventDto.setConfirmedRequests(requestRepository.findCountOfEventConfirmedRequests(event.getId()));
+        EventUtils.addViewsAndConfirmedRequestsToEvents(List.of(eventDto), statsClient, requestRepository);
 
         return eventDto;
     }
