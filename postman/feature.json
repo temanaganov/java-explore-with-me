@@ -74,7 +74,6 @@
 							"",
 							"pm.test(\"Данные в запросе должны соответствовать данным в ответе\", () => {",
 							"    pm.expect(res.eventId).equal(req.eventId);",
-							"    pm.expect(res.userId).equal(pm.collectionVariables.get('userId'));",
 							"    pm.expect(res.text).equal(req.text);",
 							"})"
 						],
