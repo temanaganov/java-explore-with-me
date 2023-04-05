@@ -16,6 +16,8 @@ import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.user.model.User;
 import ru.practicum.ewm.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -33,6 +35,7 @@ public class CommentService {
         Comment comment = commentMapper.createCommentDtoToComment(createCommentDto);
         comment.setUser(user);
         comment.setEvent(event);
+        comment.setCreatedOn(LocalDateTime.now());
 
         return commentMapper.commentToCommentDto(commentRepository.save(comment));
     }
@@ -43,10 +46,25 @@ public class CommentService {
         Comment comment = checkComment(commentId);
 
         if (comment.getUser().getId() != userId) {
-            throw new ConflictException();
+            throw new ConflictException("Only author of comment can edit it");
+        }
+
+        if (LocalDateTime.now().isAfter(comment.getCreatedOn().plusHours(1))) {
+            throw new ConflictException("Comment editing is available within 1 hour after creation");
         }
 
         comment.setText(updateCommentDto.getText());
+        comment.setUpdatedOn(LocalDateTime.now());
+
+        return commentMapper.commentToCommentDto(comment);
+    }
+
+    @Transactional
+    public CommentDto updateCommentByAdmin(long commentId, UpdateCommentDto updateCommentDto) {
+        Comment comment = checkComment(commentId);
+
+        comment.setText(updateCommentDto.getText());
+        comment.setUpdatedOn(LocalDateTime.now());
 
         return commentMapper.commentToCommentDto(comment);
     }
@@ -57,9 +75,15 @@ public class CommentService {
         Comment comment = checkComment(commentId);
 
         if (comment.getUser().getId() != userId) {
-            throw new ConflictException();
+            throw new ConflictException("Only author of comment can delete it");
         }
 
+        commentRepository.deleteById(commentId);
+    }
+
+    @Transactional
+    public void deleteCommentByAdmin(long commentId) {
+        checkComment(commentId);
         commentRepository.deleteById(commentId);
     }
 

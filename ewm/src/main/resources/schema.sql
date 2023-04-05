@@ -64,6 +64,8 @@ CREATE TABLE IF NOT EXISTS comment
     user_id    BIGINT        NOT NULL,
     event_id   BIGINT        NOT NULL,
     text       VARCHAR(2000) NOT NULL,
+    created_on TIMESTAMP     NOT NULL,
+    updated_on TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
     FOREIGN KEY (event_id) REFERENCES event (event_id) ON DELETE CASCADE
 )

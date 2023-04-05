@@ -13,7 +13,7 @@ import javax.validation.constraints.Size;
 @RequiredArgsConstructor
 public class CreateCommentDto {
     @NotNull
-    private long eventId;
+    private Long eventId;
 
     @NotBlank
     @Size(max = 2000)

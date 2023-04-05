@@ -20,7 +20,7 @@ import javax.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users/{userId}/comments")
-public class CommentController {
+public class CommentControllerPrivate {
     private final CommentService commentService;
 
     @PostMapping
@@ -30,7 +30,7 @@ public class CommentController {
     }
 
     @PatchMapping("/{commentId}")
-    public CommentDto deleteComment(
+    public CommentDto updateComment(
             @PathVariable long userId,
             @PathVariable long commentId,
             @Valid @RequestBody UpdateCommentDto updateCommentDto
