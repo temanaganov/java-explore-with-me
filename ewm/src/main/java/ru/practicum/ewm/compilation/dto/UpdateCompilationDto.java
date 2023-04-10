@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateCompilationDto {
-    @Size(max = 120)
+    @Size(min = 1, max = 120)
     private String title;
 
     private Boolean pinned;

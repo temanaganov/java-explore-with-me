@@ -56,37 +56,11 @@ public class EventServiceAdmin {
     public EventDto moderateEvent(long eventId, UpdateEventAdminDto updateEventDto) {
         Event event = checkEvent(eventId);
 
-        if (updateEventDto.getAnnotation() != null) {
-            event.setAnnotation(updateEventDto.getAnnotation());
-        }
+        eventMapper.updateEvent(event, updateEventDto);
 
         if (updateEventDto.getCategory() != null) {
             Category category = checkCategory(updateEventDto.getCategory());
             event.setCategory(category);
-        }
-
-        if (updateEventDto.getTitle() != null) {
-            event.setTitle(updateEventDto.getTitle());
-        }
-
-        if (updateEventDto.getDescription() != null) {
-            event.setDescription(updateEventDto.getDescription());
-        }
-
-        if (updateEventDto.getEventDate() != null) {
-            event.setEventDate(updateEventDto.getEventDate());
-        }
-
-        if (updateEventDto.getPaid() != null) {
-            event.setPaid(updateEventDto.getPaid());
-        }
-
-        if (updateEventDto.getParticipantLimit() != null) {
-            event.setParticipantLimit(updateEventDto.getParticipantLimit());
-        }
-
-        if (updateEventDto.getRequestModeration() != null) {
-            event.setRequestModeration(updateEventDto.getRequestModeration());
         }
 
         if (updateEventDto.getStateAction() != null) {

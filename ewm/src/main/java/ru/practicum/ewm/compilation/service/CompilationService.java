@@ -66,16 +66,10 @@ public class CompilationService {
                 .findById(compilationId)
                 .orElseThrow(() -> new NotFoundException("compilation", compilationId));
 
+        compilationMapper.updateCompilation(compilation, updateCompilationDto);
+
         if (updateCompilationDto.getEvents() != null) {
             compilation.setEvents(eventRepository.findAllByIdIn(updateCompilationDto.getEvents()));
-        }
-
-        if (updateCompilationDto.getPinned() != null) {
-            compilation.setPinned(updateCompilationDto.getPinned());
-        }
-
-        if (updateCompilationDto.getTitle() != null && !updateCompilationDto.getTitle().isBlank()) {
-            compilation.setTitle(updateCompilationDto.getTitle());
         }
 
         return compilationMapper.compilationToCompilationDto(compilation);

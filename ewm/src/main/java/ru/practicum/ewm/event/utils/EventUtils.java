@@ -2,6 +2,7 @@ package ru.practicum.ewm.event.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ru.practicum.ewm.core.constants.DateTime;
 import ru.practicum.ewm.event.dto.EventDto;
 import ru.practicum.ewm.request.model.Request;
 import ru.practicum.ewm.request.repository.RequestRepository;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class EventUtils {
     public static final ObjectMapper objectMapper = new ObjectMapper();
-    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DateTime.DATE_TIME_FORMAT);
 
     public static void addViewsAndConfirmedRequestsToEvents(
             List<EventDto> events,

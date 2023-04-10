@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import ru.practicum.ewm.core.constants.DateTime;
 import ru.practicum.ewm.event.validation.MinHoursLater;
 
 import javax.validation.Valid;
@@ -27,7 +28,7 @@ public class UpdateEventDto {
     private String description;
 
     @MinHoursLater(2)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateTime.DATE_TIME_FORMAT)
     private LocalDateTime eventDate;
 
     @Valid

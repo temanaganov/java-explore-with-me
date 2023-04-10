@@ -105,42 +105,11 @@ public class EventServicePrivate {
             throw new ConflictException();
         }
 
-        if (updateEventUserDto.getAnnotation() != null) {
-            event.setAnnotation(updateEventUserDto.getAnnotation());
-        }
+        eventMapper.updateEvent(event, updateEventUserDto);
 
         if (updateEventUserDto.getCategory() != null) {
             Category category = checkCategory(updateEventUserDto.getCategory());
             event.setCategory(category);
-        }
-
-        if (updateEventUserDto.getTitle() != null) {
-            event.setTitle(updateEventUserDto.getTitle());
-        }
-
-        if (updateEventUserDto.getDescription() != null) {
-            event.setDescription(updateEventUserDto.getDescription());
-        }
-
-        if (updateEventUserDto.getEventDate() != null) {
-            event.setEventDate(updateEventUserDto.getEventDate());
-        }
-
-        if (updateEventUserDto.getLocation() != null) {
-            event.setLatitude(updateEventUserDto.getLocation().getLat());
-            event.setLongitude(updateEventUserDto.getLocation().getLon());
-        }
-
-        if (updateEventUserDto.getPaid() != null) {
-            event.setPaid(updateEventUserDto.getPaid());
-        }
-
-        if (updateEventUserDto.getParticipantLimit() != null) {
-            event.setParticipantLimit(updateEventUserDto.getParticipantLimit());
-        }
-
-        if (updateEventUserDto.getRequestModeration() != null) {
-            event.setRequestModeration(updateEventUserDto.getRequestModeration());
         }
 
         if (updateEventUserDto.getStateAction() != null) {
